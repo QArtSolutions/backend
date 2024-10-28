@@ -24,6 +24,15 @@ app.use(cors()); // Enable CORS for all routes
 // Routes
 app.use('/api/users', userController);
 
+
+//Test
+ app.use('/api/getusers', (req,res)=> {
+     return res.status(200).json({
+      message:'this got hit getuser'
+     })
+ });
+
+
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
