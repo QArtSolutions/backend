@@ -29,5 +29,5 @@ jobs:
     - run: |
        touch .env
        echo "${{ secrets.DEV_ENV_FILE }}" > .env
-    - run: node src/server.js
+    - run: pm2 restart backend
   
