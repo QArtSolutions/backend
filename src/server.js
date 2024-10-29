@@ -1,8 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const userController = require('./infrastructure/controllers/userController');
-require('dotenv').config();
+
 
 
 const app = express();
@@ -24,8 +25,17 @@ app.use(cors()); // Enable CORS for all routes
 // Routes
 app.use('/api/users', userController);
 
+
+//Test
+ app.use('/api/getusers', (req,res)=> {
+     return res.status(200).json({
+      message:'this got hit getuser'
+     })
+ });
+
+
 // Start server
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
