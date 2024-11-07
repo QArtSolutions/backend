@@ -2,6 +2,7 @@ const express = require('express');
 const { registerUser } = require('../../application/services/userService');
 const { loginUser } = require('../../application/services/userService');
 const router = express.Router();
+const userHistory  = require('../../domain/entities/userHistory_model.js');
 
 
 // POST /register - Register a new user
@@ -46,6 +47,22 @@ router.post('/login', async (req, res) => {
 
 router.get('/test', (req, res) => {
   res.status(200).json({ message: 'Backend is working!' });
+});
+
+
+router.post('/search-history', async (req, res) => {
+  const { userId, searchedBrand } = req.body;
+  console.log(req.body);
+  try {
+    await userHistory.create({
+      user_id: userId,
+      searched_brand: searchedBrand,
+    });
+    res.status(201).json({ message: 'Search history recorded successfully' });
+  } catch (error) {
+    console.error('Error recording search history:', error);
+    res.status(500).json({ error: 'Failed to record search history' });
+  }
 });
 
 
