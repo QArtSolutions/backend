@@ -54,11 +54,35 @@ router.post('/search-history', async (req, res) => {
   const { userId, searchedBrand } = req.body;
   console.log(req.body);
   try {
-    await userHistory.create({
-      user_id: userId,
-      searched_brand: searchedBrand,
+    // Check if the user has already searched for the brand
+    const existingRecord = await userHistory.findOne({
+      where: {
+        user_id: userId,
+        searched_brand: searchedBrand
+      }
     });
-    res.status(201).json({ message: 'Search history recorded successfully' });
+
+    if (existingRecord) {
+      // If the brand exists in the user's search history, update the timestamp
+      await userHistory.update(
+        { created_at: new Date() }, // Update the timestamp
+        {
+          where: {
+            user_id: userId,
+            searched_brand: searchedBrand
+          }
+        }
+      );
+      res.status(200).json({ message: 'Search history updated successfully' });
+    } else {
+      // If the brand does not exist, create a new record
+      await userHistory.create({
+        user_id: userId,
+        searched_brand: searchedBrand,
+      });
+      res.status(201).json({ message: 'Search history recorded successfully' });
+    }
+    
   } catch (error) {
     console.error('Error recording search history:', error);
     res.status(500).json({ error: 'Failed to record search history' });
