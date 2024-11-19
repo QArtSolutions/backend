@@ -65,5 +65,30 @@ router.post('/search-history', async (req, res) => {
   }
 });
 
+router.post('/search-history_user', async (req, res) => {
+  const { userId, page = 1, limit = 10 } = req.body;
+
+  try {
+    // Fetch search history using Sequelize
+    const history = await userHistory.findAll({
+      where: {
+        user_id: userId
+      },
+      attributes: ['searched_brand'],
+      offset: (page - 1) * limit,
+      limit: parseInt(limit),
+    });
+
+    if (history.length === 0) {
+      return res.status(404).json({ message: 'No search history found for this user.' });
+    }
+
+    res.status(200).json(history);
+  } catch (error) {
+    console.error('Error fetching search history:', error);
+    res.status(500).json({ message: 'Failed to fetch search history' });
+  }
+});
+
 
 module.exports = router;
