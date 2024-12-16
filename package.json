@@ -6,8 +6,8 @@
     "db-migrate-pg": "^1.5.2",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
-    "pg": "^8.13.0",
-    "sequelize": "^6.37.4"
+    "pg": "^8.13.1",
+    "sequelize": "^6.37.5"
   },
   "name": "backend",
   "description": "social listening backend",
