@@ -8,6 +8,7 @@ const UserPreferences = require('../../domain/entities/userPreferences_model');
 
 
 
+
 // POST /register - Register a new user
 router.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
@@ -144,7 +145,7 @@ router.post('/search-history', async (req, res) => {
     if (existingRecord) {
       // If the brand exists in the user's search history, update the timestamp
       await userHistory.update(
-        { created_at: new Date() }, // Update the timestamp
+        { updated_at: new Date() }, // Update the timestamp
         {
           where: {
             user_id: userId,
@@ -192,6 +193,34 @@ router.post('/search-history_user', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch search history' });
   }
 });
+
+router.post('/search-history_userData', async (req, res) => {
+  const { userId, limit = 1 } = req.body; // Only fetch the most recent search
+
+  try {
+    // Fetch the latest search history using Sequelize
+    const history = await userHistory.findAll({
+      where: {
+        user_id: userId
+      },
+      attributes: ['searched_brand', 'updated_at'],
+      order: [['updated_at', 'DESC']], // Sort by updatedAt in descending order
+      limit: parseInt(limit),
+    });
+
+    if (history.length === 0) {
+      return res.status(404).json({ message: 'No search history found for this user.' });
+    }
+
+    res.status(200).json(history);
+  } catch (error) {
+    console.error('Error fetching search history:', error);
+    res.status(500).json({ message: 'Failed to fetch search history' });
+  }
+});
+
+
+
 
 
 module.exports = router;

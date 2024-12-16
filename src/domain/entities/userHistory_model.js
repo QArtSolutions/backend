@@ -24,7 +24,15 @@ const UserHistory = sequelize.define('UserHistory', {
   search_time: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
-  }
+  },
+  created_at: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+  },
+  updated_at: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+  },
 }, {
   tableName: 'user_history', // Table name in your database
   timestamps: false, // No automatic `createdAt` and `updatedAt`

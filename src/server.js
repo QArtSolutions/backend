@@ -16,7 +16,7 @@ app.use((req, res, next) => {
 
 // Use cors middleware
 app.use(cors());
-
+app.use(express.json());
 // Middleware
 app.use(bodyParser.json());
 app.use(cors()); // Enable CORS for all routes
