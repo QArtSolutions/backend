@@ -3,6 +3,9 @@ const { registerUser } = require('../../application/services/userService');
 const { loginUser } = require('../../application/services/userService');
 const router = express.Router();
 const userHistory  = require('../../domain/entities/userHistory_model.js');
+const User = require('../../domain/entities/user_model'); 
+const UserPreferences = require('../../domain/entities/userPreferences_model');
+
 
 
 
@@ -48,6 +51,82 @@ router.post('/login', async (req, res) => {
 
 router.get('/test', (req, res) => {
   res.status(200).json({ message: 'Backend is working!' });
+});
+
+
+
+router.post('/save-preferences', async (req, res) => {
+  const { userId, company, industry, competitors } = req.body;
+
+  if (!userId || !company || !industry || !competitors) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    const [preferences, created] = await UserPreferences.upsert({
+      user_id: userId,
+      company,
+      industry,
+      competitors: JSON.stringify(competitors), // Save competitors as a JSON string
+    });
+
+    res.status(200).json({ message: 'Preferences saved successfully', preferences });
+  } catch (error) {
+    console.error('Error saving preferences:', error);
+    res.status(500).json({ message: 'Failed to save preferences' });
+  }
+});
+
+// POST /api/users/get-preferences - Retrieve user preferences
+router.post('/get-preferences', async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ message: 'User ID is required' });
+  }
+
+  try {
+    const preferences = await UserPreferences.findOne({ where: { user_id: userId } });
+
+    if (!preferences) {
+      return res.status(404).json({ message: 'Preferences not found' });
+    }
+
+    res.status(200).json({
+      company: preferences.company,
+      industry: preferences.industry,
+      competitors: JSON.parse(preferences.competitors),
+    });
+  } catch (error) {
+    console.error('Error fetching preferences:', error);
+    res.status(500).json({ message: 'Failed to fetch preferences' });
+  }
+});
+
+// API to fetch user details by userId
+router.post('/details', async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ message: 'User ID is required' });
+  }
+
+  try {
+    // Fetch user details from the database
+    const user = await User.findOne({
+      where: { id: userId },
+      attributes: ['username', 'email'], // Only fetch username and email
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 
