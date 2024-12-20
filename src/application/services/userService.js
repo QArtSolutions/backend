@@ -8,9 +8,9 @@ async function registerUser(username, email, password) {
     throw new Error('User with this email already exists.');
   }
   const userWithUsername = await User.findOne({ where: { username: username } });
-  if (userWithUsername) {
-    throw new Error('User with this username already exists.');
-  }
+  // if (userWithUsername) {
+  //   throw new Error('User with this username already exists.');
+  // }
 
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
