@@ -5,6 +5,8 @@ const router = express.Router();
 const userHistory  = require('../../domain/entities/userHistory_model.js');
 const User = require('../../domain/entities/user_model'); 
 const UserPreferences = require('../../domain/entities/userPreferences_model');
+const https = require("https");
+const axios = require("axios");
 
 
 
@@ -219,6 +221,32 @@ router.post('/search-history_userData', async (req, res) => {
   }
 });
 
+
+router.get("/image-proxy", async (req, res) => {
+  const { url } = req.query;
+
+  if (!url) {
+    return res.status(400).send("URL parameter is required.");
+  }
+
+  try {
+    // Fetch the image with a proper User-Agent
+    const response = await axios.get(url, {
+      responseType: "stream",
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
+      httpsAgent: new https.Agent({ rejectUnauthorized: false }), // Handle SSL
+    });
+
+    // Pass the image response to the frontend
+    res.setHeader("Content-Type", response.headers["content-type"]);
+    response.data.pipe(res);
+  } catch (error) {
+    console.error("Error fetching image:", error.message);
+    res.status(500).send("Failed to fetch the image.");
+  }
+});
 
 
 
